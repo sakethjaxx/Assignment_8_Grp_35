@@ -21,7 +21,7 @@ env:
   BUILD_CONFIGURATION: Release
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -51,16 +51,16 @@ jobs:
           if-no-files-found: error
 
   lint: 
-
     runs-on: windows-latest
 
     steps:
+    - uses: actions/checkout@v3
+    
     - name: RunLint
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run : echo LINT
 
   test:
-
     needs: [build, lint]
     runs-on: windows-latest
 
@@ -78,7 +78,43 @@ jobs:
     - name: RunTests
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run : VSTest.Console.exe  x64\Release\UnitTest1.dll
+      
+  SaveBinary:
+    needs: [test]
+    runs-on: windows-latest
     
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: DownloadBinaries
+      uses: actions/download-artifact@v3
+      with:
+        name: my-artifact
+        path: x64\Release
+    
+    - name: stage
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: copy  x64\Release\PipeplinesExe.exe .
+      
+    - name: addEmail
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: git config --global user.email "sakethjaggaiahgari@gmail.com"
+      
+    - name: addName
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: git config --global user.name "Saketh Jaggaiahgari"
+      
+    - name: add
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: git add PipeplinesExe.exe 
+          
+    - name: commit
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: git commit -m "generated"
+      
+    - name: push
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      run: git push 
     
       
     

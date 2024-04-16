@@ -58,7 +58,7 @@ jobs:
     
     - name: RunLint
       working-directory: ${{env.GITHUB_WORKSPACE}}
-      run : echo LINT
+      run : echo LINTING
 
   test:
     needs: [build, lint]

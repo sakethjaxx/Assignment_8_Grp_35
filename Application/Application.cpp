@@ -4,7 +4,7 @@
 #include "framework.h"
 #include "Application.h"
 
-
+// running a simple pull and merge request example
 CoolClass::CoolClass(void)
 {
 }
